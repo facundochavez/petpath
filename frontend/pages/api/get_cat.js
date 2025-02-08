@@ -3,7 +3,7 @@ import catsMissedImages from '../../data/cats-missed-images.json';
 let allCats = [];
 let availableCats = [];
 let sentCats = [];
-const LEVELS = [
+const FEATURES = [
   'affection_level',
   'adaptability',
   'energy_level',
@@ -11,7 +11,7 @@ const LEVELS = [
   'vocalisation',
   'social_needs',
 ];
-const EXTRA_LEVELS = [
+const EXTRA_FEATURES = [
   'stranger_friendly',
   'child_friendly',
   'dog_friendly',
@@ -32,7 +32,7 @@ const handler = async (req, res) => {
       const getLength = req.query.get_length;
       const updateCats = req.query.update_cats;
       const selectedIndex = req.query.selected_index;
-      const selectedLevel = req.query.selected_level;
+      const selectedFeature = req.query.selected_feature;
       const selectedAction = req.query.selected_action;
 
       // FETCHING ALL CATS AT FIRST TIME
@@ -74,7 +74,7 @@ const handler = async (req, res) => {
       // LOOKING FOR RANDOM CAT WITH A LOW SCORE IF SELECTED INDEX IS UNDEFINED (FIRST CALL)
       if (selectedIndex === 'undefined') {
         const lowScoring = (cat) =>
-          LEVELS.reduce((score, level) => score + cat[level], 0);
+          FEATURES.reduce((score, feature) => score + cat[feature], 0);
         const sortedCats = allCats.sort(
           (a, b) => lowScoring(a) - lowScoring(b)
         );
@@ -82,10 +82,11 @@ const handler = async (req, res) => {
         const randomIndex = Math.floor(Math.random() * lowestScores.length);
         cat = lowestScores[randomIndex];
       }
+
       // LOOKING FOR MAX-SCORED CAT IF SELECTED INDEX IS DEFINED
       else {
         const selectedIndexInt = parseInt(selectedIndex);
-        const selectedLevelName = LEVELS[parseInt(selectedLevel) - 1];
+        const selectedFeatureName = FEATURES[parseInt(selectedFeature) - 1];
 
         //// UPDATING SENDED_CATS IF THE ORIGIN CAT IS NOT THE LAST SENDED
         if (selectedIndexInt + 1 < sentCats.length) {
@@ -98,29 +99,29 @@ const handler = async (req, res) => {
         if (selectedAction === '=') {
           matchCats = availableCats.filter(
             (cat) =>
-              cat[selectedLevelName] ===
-              sentCats[selectedIndexInt][selectedLevelName]
+              cat[selectedFeatureName] ===
+              sentCats[selectedIndexInt][selectedFeatureName]
           );
         } else if (selectedAction === '-') {
           matchCats = availableCats.filter(
             (cat) =>
-              cat[selectedLevelName] <
-              sentCats[selectedIndexInt][selectedLevelName]
+              cat[selectedFeatureName] <
+              sentCats[selectedIndexInt][selectedFeatureName]
           );
         } else {
           matchCats = availableCats.filter(
             (cat) =>
-              cat[selectedLevelName] >
-              sentCats[selectedIndexInt][selectedLevelName]
+              cat[selectedFeatureName] >
+              sentCats[selectedIndexInt][selectedFeatureName]
           );
         }
 
         //// GETTING MAX-SCORED CAT
         const scoring = (cat) =>
-          LEVELS.reduce(
-            (score, level) =>
+          FEATURES.reduce(
+            (score, feature) =>
               score +
-              (5 - Math.abs(sentCats[selectedIndexInt][level] - cat[level])),
+              (5 - Math.abs(sentCats[selectedIndexInt][feature] - cat[feature])),
             0
           );
         cat = matchCats.reduce(
@@ -155,31 +156,31 @@ const handler = async (req, res) => {
         images: imagesData.map((image) => ({ id: image.id, url: image.url })),
         description: cat.description,
         fav: false,
-        selected_level: null,
+        selected_feature: null,
         selected_action: null,
-        levels: {},
-        extra_levels: {},
+        features: {},
+        extra_features: {},
       };
 
-      // ADDING LEVELS AND ACTION ABILITIES TO NEW CAT
-      for (const level of LEVELS) {
-        newCat.levels[level] = {
-          points: cat[level],
+      // ADDING FEATURES AND ACTION ABILITIES TO NEW CAT
+      for (const feature of FEATURES) {
+        newCat.features[feature] = {
+          points: cat[feature],
           plus_ability: availableCats.some(
-            (availableCat) => availableCat[level] > cat[level]
+            (availableCat) => availableCat[feature] > cat[feature]
           ),
           equal_ability: availableCats.some(
-            (availableCat) => availableCat[level] === cat[level]
+            (availableCat) => availableCat[feature] === cat[feature]
           ),
           less_ability: availableCats.some(
-            (availableCat) => availableCat[level] < cat[level]
+            (availableCat) => availableCat[feature] < cat[feature]
           ),
         };
       }
-      // ADDING EXTRA LEVELS TO NEW CAT
-      for (const extraLevel of EXTRA_LEVELS) {
-        newCat.extra_levels[extraLevel] = {
-          points: cat[extraLevel],
+      // ADDING EXTRA FEATURES TO NEW CAT
+      for (const extraFeature of EXTRA_FEATURES) {
+        newCat.extra_features[extraFeature] = {
+          points: cat[extraFeature],
         };
       }
 

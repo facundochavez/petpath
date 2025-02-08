@@ -6,7 +6,7 @@ import { useGlobalContext } from 'context/global.context';
 
 const LEVELS = ['affection_level','adaptability','energy_level','intelligence','vocalisation','social_needs']
 
-const LevelButtons = ({ levels, selectedLevel, isActive, cardIndex }) => {
+const LevelButtons = ({ levels, selectedFeature, isActive, cardIndex }) => {
   const { globalContext } = useGlobalContext();
   const { ref2 } = useTourContext();
   ////COMPONENT
@@ -15,16 +15,16 @@ const LevelButtons = ({ levels, selectedLevel, isActive, cardIndex }) => {
       className={styles.level_buttons}
       style={!isActive ? { filter: 'grayscale() brightness(0.9)' } : null}
       ref={globalContext === 'tour' ? ref2 : null}>
-      {selectedLevel && (
+      {selectedFeature && (
         <motion.div
           className={styles.level_buttons__down_line}
           initial={{ height: 0 }}
           animate={{
-            height: `${200 + 42 * (selectedLevel - 1)}px`
+            height: `${200 + 42 * (selectedFeature - 1)}px`
           }}
           transition={{ duration: 0.5 }}
           style={{
-            bottom: `${228 - 42 * (selectedLevel - 1)}px`
+            bottom: `${228 - 42 * (selectedFeature - 1)}px`
           }}
         />
       )}
@@ -32,7 +32,7 @@ const LevelButtons = ({ levels, selectedLevel, isActive, cardIndex }) => {
         return (
           <LevelButton
             key={index}
-            levelIndex={index}
+            featureIndex={index}
             level={levels[level] ? level : null}
             levelInfo={levels[level]}
             cardIndex={cardIndex}

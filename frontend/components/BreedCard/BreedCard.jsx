@@ -39,7 +39,7 @@ const BreedCard = ({ isFirst, isLast, isActive, isPrev, breed, cardIndex }) => {
         <BreedImages images={breed?.images} />
         <LevelButtons
           levels={breed?.levels}
-          selectedLevel={breed?.selected_level}
+          selectedFeature={breed?.selected_feature}
           isActive={isActive}
           cardIndex={cardIndex}
         />
@@ -52,7 +52,7 @@ const BreedCard = ({ isFirst, isLast, isActive, isPrev, breed, cardIndex }) => {
         className={styles.breed_card__side_container}
         style={{ opacity: isLast ? 0 : 1 }}
       >
-        {breed?.selected_level && (
+        {breed?.selected_feature && (
           <div className={styles.breed_card__side_container__subcontainer}>
             <motion.div
               className={

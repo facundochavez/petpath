@@ -29,7 +29,7 @@ export default function ExploredBreedsProvider({ children }) {
   //// ADD NEW BREED
   const addNewBreed = async ({
     selected_index,
-    selected_level,
+    selected_feature,
     selected_action,
   }) => {
     window.scrollTo({
@@ -42,7 +42,7 @@ export default function ExploredBreedsProvider({ children }) {
     // HANDLE REQUEST ARROW IF CARD IS DEFINED
     {
       selected_index !== undefined &&
-        handleRequestArrow(selected_index, selected_level, selected_action);
+        handleRequestArrow(selected_index, selected_feature, selected_action);
 
       // TAKING OF THE LAST CARDS IF SELECTED INDEX IS NOT LAST
       selected_index + 1 < exploredCats.length &&
@@ -61,7 +61,7 @@ export default function ExploredBreedsProvider({ children }) {
     setTimeout(async () => {
       const newBreed = await fetchNewBreed(
         selected_index,
-        selected_level,
+        selected_feature,
         selected_action
       );
       setExploredCats((prevExploredBreeds) => [
@@ -74,9 +74,9 @@ export default function ExploredBreedsProvider({ children }) {
   };
 
   //// HANDLE SELECTED LEVEL AND ACTION (FOR REQUEST ARROW)
-  function handleRequestArrow(selected_index, selected_level, selected_action) {
+  function handleRequestArrow(selected_index, selected_feature, selected_action) {
     const newExploredBreeds = [...exploredCats];
-    newExploredBreeds[selected_index].selected_level = selected_level;
+    newExploredBreeds[selected_index].selected_feature = selected_feature;
     newExploredBreeds[selected_index].selected_action = selected_action;
     setExploredCats(newExploredBreeds);
   }

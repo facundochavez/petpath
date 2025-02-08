@@ -11,7 +11,7 @@ import { useExploredBreedsContext } from 'context/exploredBreeds.context';
 import { useTourContext } from 'context/tour.context';
 import { useGlobalContext } from 'context/global.context';
 
-const LevelButton = ({ levelIndex, level, levelInfo, cardIndex }) => {
+const LevelButton = ({ featureIndex, level, levelInfo, cardIndex }) => {
   const { globalContext } = useGlobalContext();
   const { ref3 } = useTourContext();
   const { addNewBreed } = useExploredBreedsContext();
@@ -62,7 +62,7 @@ const LevelButton = ({ levelIndex, level, levelInfo, cardIndex }) => {
         <div
           className={styles.level_button}
           onClick={() => setShowActions(!showActions)}
-          ref={levelIndex === 2 && globalContext === 'tour' ? ref3 : null}>
+          ref={featureIndex === 2 && globalContext === 'tour' ? ref3 : null}>
           <div className={styles.level_button__level_bar}>
             <motion.div
               initial={{ width: 0 }}
@@ -127,7 +127,7 @@ const LevelButton = ({ levelIndex, level, levelInfo, cardIndex }) => {
                         ? () => {
                             addNewBreed({
                               selected_index: cardIndex,
-                              selected_level: levelIndex + 1,
+                              selected_feature: featureIndex + 1,
                               selected_action: option.action
                             });
                           }

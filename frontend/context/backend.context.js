@@ -61,10 +61,10 @@ const BackendProvider = ({ children }) => {
     }
   };
 
-  const fetchNewBreed = async (selected_index, selected_level, selected_action) => {
+  const fetchNewBreed = async (selected_index, selected_feature, selected_action) => {
     try {
       const response = await fetch(
-        `${BACKEND_ENDPOINT}/?selected_index=${selected_index}&selected_level=${selected_level}&selected_action=${selected_action}`
+        `${BACKEND_ENDPOINT}/?selected_index=${selected_index}&selected_feature=${selected_feature}&selected_action=${selected_action}`
       );
       const newBreed = await response.json();
       return newBreed;

@@ -15,10 +15,10 @@ with open(dogs_file_path) as dogs_file:
 all_cats = []
 available_cats = []
 sent_cats = []
-LEVELS = ['affection_level', 'adaptability', 'energy_level',
+FEATURES = ['affection_level', 'adaptability', 'energy_level',
             'intelligence', 'vocalisation', 'social_needs']
-EXTRA_LEVELS = ['stranger_friendly', 'child_friendly',
-                'dog_friendly', 'grooming', 'health_issues', 'shedding_level']
+EXTRA_FEATURES = ['stranger_friendly', 'child_friendly',
+                'dog_friendly', 'grooming', 'health_issues','shedding_level']
 THE_CAT_API_ENDPOINT = 'https://api.thecatapi.com/v1'
 HEADERS = {
     'x-api-key': 'process.env.THE_CAT_API_KEY',
@@ -35,7 +35,7 @@ def get_cat(request):
     get_length = request.GET.get('get_length')
     update_cats = request.GET.get('update_cats')
     selected_index = request.GET.get('selected_index')
-    selected_level = request.GET.get('selected_level')
+    selected_feature = request.GET.get('selected_feature')
     selected_action = request.GET.get('selected_action')
 
     # FETCHING ALL CATS AT FIRST TIME
@@ -71,8 +71,8 @@ def get_cat(request):
     if selected_index == 'undefined':
         def low_scoring(cat):
             score = 0
-            for level in LEVELS:
-                score += cat.get(level)
+            for feature in FEATURES:
+                score += cat.get(feature)
             return score
         sorted_cats = sorted(all_cats, key=low_scoring)
         lowest_scores = sorted_cats[:15]
@@ -82,7 +82,7 @@ def get_cat(request):
     # LOOKING FOR MAX-SCORED CAT IF SELECTED INDEX IS DEFINED
     else:
         selected_index = int(selected_index)
-        selected_level = LEVELS[int(selected_level) - 1]
+        selected_feature = FEATURES[int(selected_feature) - 1]
 
         # UPDATING sent_cats IF THE ORIGIN CAT IS NOT THE LAST SENDED
         if selected_index + 1 < len(sent_cats):
@@ -93,22 +93,22 @@ def get_cat(request):
         # GETTING CATS THAT MEET THE REQUERIMENT
         if selected_action == '=':
             match_cats = [cat for cat in available_cats if cat.get(
-                selected_level) == sent_cats[selected_index].get(selected_level)]
+                selected_feature) == sent_cats[selected_index].get(selected_feature)]
         elif selected_action == '-':
             match_cats = [cat for cat in available_cats if cat.get(
-                selected_level) < sent_cats[selected_index].get(selected_level)]
+                selected_feature) < sent_cats[selected_index].get(selected_feature)]
         else:
             match_cats = [cat for cat in available_cats if cat.get(
-                selected_level) > sent_cats[selected_index].get(selected_level)]
+                selected_feature) > sent_cats[selected_index].get(selected_feature)]
 
         # GETTING MAX-SCORED CAT
         def scoring(cat):
             score = 0
-            for level in LEVELS:
-                level_score = 5 - \
+            for feature in FEATURES:
+                feature_score = 5 - \
                     abs(sent_cats[selected_index].get(
-                        level) - cat.get(level))
-                score += level_score
+                        feature) - cat.get(feature))
+                score += feature_score
             return score
         cat = max(match_cats, key=scoring)
 
@@ -137,23 +137,23 @@ def get_cat(request):
             } for image in images_data],
         'description': cat['description'],
         'fav': False,
-        'selected_level': None,
+        'selected_feature': None,
         'selected_action': None,
-        'levels': {},
-        'extra_levels': {}
+        'features': {},
+        'extra_features': {}
     }
 
-    # ADDING LEVELS AND ACTION ABILITIES TO CATS
-    for level in LEVELS:
-        new_cat['levels'][level] = {
-            'points': cat[level],
-            'plus_ability': any(available_cat.get(level) > cat.get(level) for available_cat in available_cats),
-            'equal_ability': any(available_cat.get(level) == cat.get(level) for available_cat in available_cats),
-            'less_ability': any(available_cat.get(level) < cat.get(level) for available_cat in available_cats),
+    # ADDING FEATURES AND ACTION ABILITIES TO CATS
+    for feature in FEATURES:
+        new_cat['features'][feature] = {
+            'points': cat[feature],
+            'plus_ability': any(available_cat.get(feature) > cat.get(feature) for available_cat in available_cats),
+            'equal_ability': any(available_cat.get(feature) == cat.get(feature) for available_cat in available_cats),
+            'less_ability': any(available_cat.get(feature) < cat.get(feature) for available_cat in available_cats),
         }
-    for extra_level in EXTRA_LEVELS:
-        new_cat['extra_levels'][extra_level] = {
-            'points': cat[extra_level],
+    for extra_feature in EXTRA_FEATURES:
+        new_cat['extra_features'][extra_feature] = {
+            'points': cat[extra_feature],
         }
 
     return JsonResponse(new_cat)
